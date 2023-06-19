@@ -1,0 +1,40 @@
+@media screen and (max-width: 924px) {
+    .content figure img {
+        width: 350px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .content figure img {
+        width: 250px;
+    }
+}
+
+.image-style-align-left {
+    float: left;
+}
+
+.image-style-align-right {
+    float: right;
+}
+
+.image-style-block-align-left {
+    justify-content: flex-start;
+}
+
+.image-style-block-align-right {
+    justify-content: flex-end;
+}
+
+.image-style-block-align-right,
+.image-style-block-align-left {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.image-style-align-center img {
+    display: block;
+    margin: auto;
+}

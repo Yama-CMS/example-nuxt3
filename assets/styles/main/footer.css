@@ -1,0 +1,25 @@
+@media screen and (max-width: 924px) {
+    footer {
+        width: 100% !important;
+    }
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-left: auto;
+    height: var(--footer-height);
+    width: calc(100% - var(--sidebar-width) - (var(--sidebar-padding) * 2));
+    background-color: var(--footer-background);
+}
+
+footer ul {
+    display: flex;
+    flex-direction: row;
+}
+
+footer li {
+    margin: 1rem;
+}

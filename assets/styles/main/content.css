@@ -1,0 +1,34 @@
+.content a {
+    color: var(--link-content-color) !important;
+    text-decoration: underline;
+}
+
+.content a:hover {
+    color: var(--link-content-color-hover) !important;
+}
+
+.content ul {
+    padding: 1rem;
+}
+
+.content li {
+    list-style-type: disc;
+}
+
+.content figure img {
+    max-width: 512px;
+    object-fit: cover;
+}
+
+.content dt {
+    font-weight: bold;
+    border-bottom: 2px solid black;
+    width: fit-content;
+    margin-bottom: 5px;
+    text-transform: capitalize;
+}
+
+.content dt::after {
+    content: ':';
+    margin-left: 4px;
+}

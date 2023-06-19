@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+@import './main/sidebar.css';
+@import './main/footer.css';
+@import './main/home.css';
+@import './main/content.css';
+@import './main/images.css';
+
+
+
+:root {
+    --main-padding: 20px;
+    --max-width: 1100px;
+    --border-radius: 15px;
+    --sidebar-width: 17.5rem;
+    --sidebar-padding: 10px;
+    --sidebar-background: #1b1c1d;
+    --sidebar-background-light: #1b1c1d4b;
+    --link-content-color: rgb(14, 112, 241);
+    --link-content-color-hover: rgb(0, 138, 143);
+    --link-title-color: white;
+    --link-color: rgb(196, 196, 196);
+    --link-color-hover: white;
+    --card-wrapper-border: gray;
+    --card-border: rgb(78, 78, 78);
+    --card-filter-hover: rgb(13 13 13 / 36%);
+    --card-title-size: 20px;
+    --card-title-weight: bold;
+    --footer-height: 5rem;
+    --footer-background: #121923;
+}
+
+html * {
+    font-family: 'Ubuntu', Arial, Helvetica, sans-serif;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    background-color: rgb(255, 255, 255);
+}
+
+h1 {
+    font-size: 4rem;
+}
+
+h2 {
+    font-size: 2.25rem;
+}
+
+h1,
+h2,
+h3 {
+    padding: 0.5rem 0;
+    margin: 0;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: transparent;
+    transition-duration: 300ms;
+}
+
+a:hover {
+    color: var(--link-color-hover);
+    text-decoration-color: var(--link-color-hover)
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style-type: none;
+    padding: 5px 0;
+}
+
+
+@media screen and (max-width: 924px) {
+    main {
+        margin-left: 0 !important;
+    }
+}
+
+main {
+    min-height: calc(100vh - var(--footer-height) - (var(--main-padding) * 2));
+    max-width: var(--max-width);
+    padding: var(--main-padding);
+    margin-left: calc(var(--sidebar-width) + 3rem);
+}
+
+.media-desktop {
+    height: 20rem;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 15px;
+    margin: 1rem 0;
+}

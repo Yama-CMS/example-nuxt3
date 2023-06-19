@@ -1,0 +1,32 @@
+@media screen and (max-width: 924px) {
+    nav {
+        display: none;
+        opacity: 0;
+    }
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    height: 100%;
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-background);
+    padding: var(--sidebar-padding);
+    z-index: 100;
+}
+
+nav span {
+    display: block;
+    color: var(--link-title-color);
+    margin: 1rem 0;
+    font-size: large;
+    font-weight: bold;
+}
+
+.thumb {
+    width: 2rem;
+    height: 1.5rem;
+    object-fit: cover;
+    vertical-align: middle;
+    margin-right: 5px;
+}
