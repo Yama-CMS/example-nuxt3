@@ -130,7 +130,10 @@ shell:
     DO +SAVE_DEPENDENCIES
 
 
-devserver:
+# Run `nuxt dev` dev server with $PWD mounted. Run locally with `earthly +dev`.
+# Note that if you exit Earthly (eg. via Ctrl+c), Earthly will immediately exit and leave the container running.
+# You can manually stop it with `earthly +stop-dev` (or `docker stop earthly-dev-server`).
+dev:
     ARG port=3000
     ARG container_name="earthly-dev-server"
     LOCALLY
@@ -144,8 +147,11 @@ devserver:
                         yarn run dev
         END
 
-    #LOCALLY
-    #    RUN docker stop $container_name
+stop-dev:
+    ARG container_name="earthly-dev-server"
+
+    LOCALLY
+        RUN docker stop "$container_name"
 
 
 
@@ -164,6 +170,7 @@ swift-deps:
 SWIFT_UPLOAD:
     COMMAND
     ARG --required file_or_directory
+
     RUN --secret OS_USERNAME \
         --secret OS_PASSWORD \
         --secret OS_AUTH_URL \
@@ -173,10 +180,16 @@ SWIFT_UPLOAD:
         --secret OS_CONTAINER_NAME \
         --push \
         -- \
-        swift upload --changed --object-name "" $OS_CONTAINER_NAME ./$file_or_directory
+        swift upload --object-threads 5 --skip-identical --object-name "" $OS_CONTAINER_NAME ./$file_or_directory
+        # NOTE: swift will send a `HEAD` request for every file! If there are a lot, OpenStack might start throwing `429 Too Many Requests`.
+        # --skip-identical compares filesize and Etag (md5 hash). We can get both using `swift list --json`. We might want to implement a
+        # custom "bulk upload" that would first list everything, then upload?
 
-SWIFT_EMPTY_BUCKET:
+
+SWIFT_DELETE_BUCKET_FILES_NOT_PRESENT_LOCALLY:
     COMMAND
+    ARG --required file_or_directory
+
     RUN --push \
         --secret OS_USERNAME \
         --secret OS_PASSWORD \
@@ -186,7 +199,18 @@ SWIFT_EMPTY_BUCKET:
         --secret OS_STORAGE_URL \
         --secret OS_CONTAINER_NAME \
         -- \
-        swift list $OS_CONTAINER_NAME | xargs --no-run-if-empty --verbose swift delete $OS_CONTAINER_NAME
+        cd $file_or_directory && \
+            swift list $OS_CONTAINER_NAME | \
+            perl -lne 'print if !-e' | \
+            xargs --no-run-if-empty --verbose swift delete --object-threads 1 $OS_CONTAINER_NAME
+
+        # The code above means:
+        # - Get the list of files in the bucket
+        # - Pipe them to a Perl one-liner to only keep files that don't exist locally. It reads like:
+        #   "On every line, trim the line (-ln) and execute this code (-e): 'print $_ if file $_ does not (-e)xist'" (in perl, `$_` holds the current line and is implicit).
+        # - Pipe the files-that-do-not-exist-locally list to `swift delete` via `xargs`
+        #   NOTE: We use --object-threads 1 so that there is only one request made. Otherwise, swift will
+        #   split all of the files into 10 threads (eg. for 50 files, it'll make 10 threads each bulk-deleting 5 files.)
 
 
 # Run `swift list` on the container
@@ -205,14 +229,13 @@ swift-list:
         swift list $OS_CONTAINER_NAME
 
 
-# Copy the site that was built in `+build`, then upload it via Swift
-upload-site:
+# Copy the site that was built in `+build`, then upload it via Swift and delete files in the container that aren't in the build result.
+build-and-upload:
     FROM +swift-deps
-    COPY +build/build_result ./to-upload
+    COPY +build/build_result ./to-sync
 
-    DO +SWIFT_EMPTY_BUCKET
-    DO +SWIFT_UPLOAD --file_or_directory=./to-upload
-
+    DO +SWIFT_UPLOAD --file_or_directory=./to-sync
+    DO +SWIFT_DELETE_BUCKET_FILES_NOT_PRESENT_LOCALLY --file_or_directory=./to-sync
 
 # Upload a robots.txt file
 upload-norobots:
@@ -220,4 +243,13 @@ upload-norobots:
 
     RUN echo 'Disallow: /' >> robots.txt
     DO +SWIFT_UPLOAD --file_or_directory=./robots.txt
+
+
+deploy-production:
+    BUILD +build-and-upload
+
+deploy-preview:
+    BUILD +build-and-upload
+    BUILD +upload-norobots
+
 
