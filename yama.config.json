@@ -1,0 +1,92 @@
+{
+  "name": "Nuxt starter example",
+  "presets": {
+    "configuration": {
+      "frontmatter": [
+        {"from": "excerpt", "to": "summary"}
+      ]
+    },
+    "taxonomies": [
+      {
+        "code": "category",
+        "configuration": {
+          "output": {
+            "directory": "data/taxonomies",
+            "filename": "{code}.json"
+          }
+        },
+        "translations": {
+          "fr_FR": {
+            "name": "Catégorie"
+          }
+        }
+      }
+    ],
+    "contents": [
+      {
+        "code": "pages",
+        "configuration": {
+          "output": {
+            "directory": "content/{code}",
+            "filename": "{slug}.{locale}.md"
+          },
+          "thumbor": {
+            "formats": [
+              {"code": "thumb", "width": 200, "height": 0}
+            ]
+          }
+        },
+        "json_schema": {
+          "properties": {
+            "layout": {
+              "type": "string",
+              "enum": [
+                "page"
+              ],
+              "default": "page"
+            }
+          }
+        },
+        "translations": {
+          "fr_FR": {
+            "label": "Page",
+            "permalink": "/{locale|language}/{slug}"
+          }
+        }
+      },
+      {
+        "code": "posts",
+        "taxonomies": ["category"],
+        "configuration": {
+          "output": {
+            "directory": "content/{code}",
+            "filename": "{date|Y-m-d}-{slug}.{locale}.md"
+          },
+          "thumbor": {
+            "formats": [
+              {"code": "thumb", "width": 200, "height": 0},
+              {"code": "desktop", "width": 1024, "height": 0}
+            ]
+          }
+        },
+        "json_schema": {
+          "properties": {
+            "layout": {
+              "type": "string",
+              "enum": [
+                "post"
+              ],
+              "default": "post"
+            }
+          }
+        },
+        "translations": {
+          "fr_FR": {
+            "label": "Post",
+            "permalink": "/{locale|language}/{date|Y-m-d}/{slug}"
+          }
+        }
+      }
+    ]
+  }
+}
